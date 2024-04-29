@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{decorators/webLayout}"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section class="vh-200">
+    <div class="container-fluid h-custom">
+        <div class="row d-flex justify-content-center h-100">
+            <div class="col-xl-2">
+                <div class="list-group">
+
+                    <a th:href="@{'/ShopFP/customer/detail/'+${#httpSession.getAttribute('CustomerId')}}" class="list-group-item list-group-item-action">Thông tin tài khoản</a>
+                    <a th:href="@{'/ShopFP/customer/OrderDetail/'+${#httpSession.getAttribute('CustomerId')}}" class="list-group-item list-group-item-action">Quản lí đơn hàng</a>
+
+                </div>
+
+            </div>
+            <div class="col-lg-10 col-xl-9" style="margin-top: 20px">
+                <div class="card text-black" style="border-radius: 25px;">
+                    <div class="row" th:each="item :${ListOrder}" style="margin-top: 20px; margin-bottom: 20px; border-radius: 10px;border: 1px solid black;">
+                        <div style="margin-top: 10px">
+                            <label><h5>Trạng thái đơn hàng</h5></label>
+                            <div th:text="${item.GetStatusString()}" style="font-size: 20px;border-bottom: 1px solid black"></div>
+                        </div>
+                        <div th:each="pro :${item.getProductDTOS()}" style="margin-bottom: 30px" >
+                            <div style="float: left;margin-bottom: 20px;margin-top: 20px; border-bottom: 1px solid black" class="col-lg-7">
+                                <label><h5>Tên sản phẩm</h5></label>
+                                <div th:text="${pro.getName()}"></div>
+
+
+                                <div style="margin-bottom: 10px"> <a th:href="@{'/ShopFP/get/'+${pro.getId()}}"><img th:src="${pro.getThumbnail()}" style="width: 150px;height: 150px"> </a></div>
+                            </div>
+                            <div style="float: left; margin-top: 20px;" class="card-body">
+                                <label><h5>Giá sản phẩm</h5></label>
+                                <div th:text="${pro.getPriceString()}+' đ'" style="margin-bottom: 30px;"></div>
+
+                                <label><h5>Số lượng</h5></label>
+                                <div th:text="${pro.getQuantity()}"></div>
+                            </div>
+                        </div>
+                        <div style="text-align: right" class="col-lg-8">
+                            <label><h5>Tổng tiền</h5></label>
+                            <div th:text="${item.getTotalPriceString()}"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </section>
+
+    <script>
+
+        $(document).ready(function () {
+
+
+            getTotalSp();
+
+        })
+        function getTotalSp() {
+            $.ajax({
+                url: '/api/cart/TotalSp',
+                type: 'get',
+
+                success: function(response) {
+
+                    // Handle the success response
+                    $('#CartCount').text(response.result);
+                    console.log('Item added to cart:', response);
+                },
+                error: function(xhr, status, error) {
+                    // Handle the error response
+                    console.error('Error adding item to cart:', error);
+                }
+            });
+        }
+    </script>
+
+</div>
+</body>
+</html>

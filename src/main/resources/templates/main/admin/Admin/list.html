@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{decorators/adminLayout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách Admin</title>
+</head>
+<body>
+<div class="container-fluid" layout:fragment="content">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Tài khoản admin</h1>
+
+    </div>
+
+    <div class="row" style="margin-bottom: 1%">
+
+            <button flag="info"
+                    class="dt-button buttons-colvis btn btn-primary btn-bold addNewObject" data-toggle="tooltip"
+                    title='Thêm mới'>
+                                                                <span>
+                                                                    <i class="fa fa-plus-circle " style="color: white;font-size: 20px"></i>
+                                                                </span>
+            </button>
+
+            <button flag="info"
+                    class="dt-button buttons-colvis btn btn-primary btn-bold deleteObject" data-toggle="tooltip"
+                    title='Khóa'>
+                                                                    <span>
+                                                                        <i class="fa fa-lock"></i>
+                                                                    </span>
+            </button>
+
+            <button flag="info"
+                    class="dt-button buttons-colvis btn btn-primary btn-bold unlockObject" data-toggle="tooltip"
+                    title='Mở khóa'>
+                                                                        <span>
+                                                                            <i class="fa fa-unlock"></i>
+                                                                        </span>
+            </button>
+
+
+
+
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+
+        <section class="intro">
+            <div class="bg-image h-100" style="background-color: #f5f7fa;">
+                <div class="mask d-flex align-items-center h-100">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive table-scroll" data-mdb-perfect-scrollbar="true" style="position: relative; height: auto">
+                                            <table class="table table-striped mb-0">
+                                                <thead style="background-color: #002d72;">
+                                                <tr>
+                                                    <th scope="col">ID</th>
+                                                    <th scope="col">Email</th>
+                                                    <th scope="col">Role</th>
+                                                    <th scope="col">Status</th>
+                                                    <th scope="col"></th>
+                                                    <th scope="col"></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody id="list_table">
+                                                <tr th:each="item:${adminList}">
+                                                    <td th:text="${item.id}"></td>
+                                                    <td th:text="${item.email}"></td>
+                                                    <td th:text="${item.role}"></td>
+                                                    <td>
+                                                        <p th:if="${item.getStatus()}==0">Đang hoạt động</p>
+                                                        <p th:if="${item.getStatus()}==1">Đã bị khóa</p>
+                                                    </td>
+
+                                                    <td><button class="btn btn-sm btn-primary btn-edit" data-toggle="tooltip"
+                                                                title="Sửa thể loại" th:value="${item.getId()}" ><span class="far fa-edit"></span>
+                                                    </button></td>
+
+                                                    <td><input type="checkbox" class="choose" name="choose" th:value="${item.getId()}"></td>
+
+                                                </tr>
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+    </div>
+
+    <!-- Content Row -->
+
+    <div class="row">
+
+
+
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+
+        <!-- Content Column -->
+
+
+
+    </div>
+    <div class="modal" id="add">
+        <div class="modal-content">
+            <span class="close" style="color: red;width: 50px">&times;</span>
+           <h4>Admin</h4>
+            <p><input type="hidden" id="idEdit" value="checkId"></p>
+
+            <label>Email</label>
+            <p style="padding-top: 3px">
+                <input type="text" id="email" border="1">
+            </p>
+
+            <label>Password</label>
+            <p>
+                <input type="password" id="password">
+            </p>
+
+            <label>Role</label>
+            <p>
+                <input type="number" min="0" id="role">
+            </p>
+
+            <p style="margin-top: 10px"><button class="btn btn-primary" id="btnConfirm">Xác nhận</button></p>
+
+
+        </div>
+    </div>
+
+    <div>
+        <span id="totalItem" th:text="'Tổng tài khoản Admin: '+${totalItem}"></span>
+        <span id="totalPage" th:text="'Trang hiện tại-'+${currentPage}+' trong-'+${totalPage}"></span>
+        <!--                                        ${#numbers.sequence(1,totalPage)}-->
+        <span id="page">
+                                                <span th:each="item:${#numbers.sequence(1,totalPage)}">
+                                                    <a th:href="@{'/admin/page/'+${item}}" th:text="${item}"></a>
+                                                </span>
+                                        </span>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+
+            Add();
+            Edit();
+            Save();
+
+            Delete();
+            Unlock();
+
+
+        });
+
+        function Add(){
+
+            let modal = $('#add');
+            let btn = $('.addNewObject');
+
+            let BtnClose = $('.close');
+
+
+
+
+
+            btn.click(function () {
+                $('#name').val('');
+                $('#idEdit').val('');
+                let IdCate = $('#idEdit').val("add");
+
+                modal.show();
+
+            });
+
+            BtnClose.click(function () {
+                modal.hide();
+            })
+
+
+
+        }
+
+        function Edit() {
+            let BtnEdit = $('.btn-edit');
+            let modal = $('#add');
+
+
+            BtnEdit.click(function () {
+                modal.show();
+                let BtnEdit = $(this).val();
+                let IdCate = $('#idEdit').val(BtnEdit);
+
+                $.ajax({
+                    url: '/api/admin/get/'+BtnEdit,
+                    type: 'Get',
+                    dataType: 'json',
+                    contentType: 'application/json',
+
+                    success: function (data) {
+
+                        if (data.status == "success") {
+
+                            $('#email').val(data.result.email);
+                            $('#password').val(data.result.password);
+                            $('#role').val(data.result.role);
+
+                        }else{
+                            alert("Tên thể loại không được để trống");
+                        }
+
+                    }
+                })
+
+
+            })
+        }
+
+        function Save() {
+            let BtnConfirm = $('#btnConfirm');
+
+            BtnConfirm.click(function () {
+                let IdCate = $('#idEdit').val();
+
+
+
+
+
+                let email = $('#email').val();
+                let password = $('#password').val();
+                let role = $('#role').val();
+
+
+                alert(role);
+
+                let admin = {
+                    email: email,
+                    password: password,
+                    role : role,
+                    status: 0,
+                }
+
+
+
+                if(IdCate == "add"){
+                    alert(IdCate);
+                    $.ajax({
+                        url: '/api/admin/save/'+IdCate,
+                        type: 'POST',
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        data:
+                            JSON.stringify(admin),
+
+                        success: function (data) {
+
+                            if (data.status == "success") {
+                                alert("Thêm mới thành công");
+                                $('#name').val("");
+                                loadData();
+                            }else{
+                                alert("Phải điền đúng định dạng các trường");
+                            }
+
+                        }
+                    })
+                }
+                else {
+
+                    $.ajax({
+                        url: '/api/admin/save/'+IdCate,
+                        type: 'POST',
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        data:
+                            JSON.stringify(admin)
+                        ,
+
+                        success: function (data) {
+
+                            if (data.status == "EditSuccess") {
+                                alert("Cập nhật thành công");
+                                loadData();
+
+                            }else{
+                                alert("Phải điền đúng định dạng các trường");
+                            }
+
+                        }
+                    })
+
+                }
+
+            })
+        }
+
+        function loadData() {
+            $.ajax({
+                url: '/api/admin/list',
+                type: 'Get',
+                dataType: 'json',
+                contentType: 'application/json',
+
+                beforeSend:function(){
+                    $("#list_new_table").html("<img width='100px' "+"src='https://acegif.com/wp-content/uploads/loading-23.gif' />")
+                },
+                success: function (data) {
+
+                    setTimeout(function () {
+                        $('#list_table').html(data.result.map(function(DataTable) {
+
+                            let Status = "";
+                            if(DataTable.status==0){
+                                Status = `<p>Đang hoạt động</p>`;
+                            }else if(DataTable.status==1) {
+                                Status = `<p>Đã khóa</p>`;
+                            }
+                            return `<tr>`+
+                                `<td>`+
+                                `${DataTable.id}`+
+                                `</td>`+
+                                `<td>`+
+                                `${DataTable.email}`+
+                                `</td>`+
+
+                                `<td>`+
+                                `${DataTable.role}`+
+                                `</td>`+
+
+                                `<td>`+
+                                `${Status}`+
+                                `</td>`+
+
+                                `<td>`+
+                                `<button class="btn btn-sm btn-primary btn-edit" data-toggle="tooltip"
+                                                           title="Sửa thể loại" value="${DataTable.id}" ><span class="far fa-edit"></span>
+                                                    </button>`+
+                                `</td>`+
+
+                                `<td>`+
+                                `<input type="checkbox" class="choose" name="choose" value="${DataTable.id}">`+
+                                `</td>`+
+
+                                `</tr>`
+                        }))
+                    })
+
+                }
+            })
+        }
+
+        function Delete() {
+            $(".deleteObject").click(function () {
+                if(confirm("Bạn có chắc muốn khóa những mục này")==true){
+
+                    var ListId = [];
+                    $('input[name="choose"]:checked').each(function () {
+                        ListId.push(this.value);
+
+
+                    })
+                if(ListId.length>0) {
+                    $.ajax({
+                        url: "/api/admin/delete",
+                        type: "GET",
+                        dataType: "json",
+                        contentType: "application/json",
+                        data: {
+                            listIdCheck: ListId.join(","),
+                        }
+
+                        ,
+
+                        success: function (data) {
+
+                            if (data.status == "delete") {
+
+                                alert("Khóa thành công");
+                                loadData();
+                            }
+                        }
+
+                    })
+                }else {
+                    alert("Vui lòng chọn ít nhất 1 mục");
+                }
+
+
+
+                }else{
+                    alert("Khóa thất bại");
+                }
+
+            })
+
+
+        }
+
+        function Unlock() {
+            $(".unlockObject").click(function () {
+                if(confirm("Bạn có chắc muốn mở khóa những mục này")==true){
+
+                    var ListId = [];
+                    $('input[name="choose"]:checked').each(function () {
+                        ListId.push(this.value);
+
+
+                    })
+                    if(ListId.length>0){
+                        $.ajax({
+                            url:"/api/admin/unlock",
+                            type:"GET",
+                            dataType:"json",
+                            contentType:"application/json",
+                            data:{
+                                listIdCheck : ListId.join(","),
+                            }
+
+                            ,
+
+                            success: function (data) {
+
+                                if(data.status == "unlock"){
+
+                                    alert("Mở khóa thành công");
+                                    loadData();
+                                }
+                            }
+
+                        })
+                    }else {
+                        alert("Vui lòng chọn ít nhất 1 mục");
+                    }
+
+
+
+                }else{
+                    alert("Mở khóa thất bại");
+                }
+
+            })
+
+
+        }
+
+
+
+    </script>
+
+</div>
+</body>
+</html>

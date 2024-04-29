@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{decorators/webLayout}"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <section class="h-100 gradient-custom">
+        <div class="container py-5">
+            <div class="row d-flex justify-content-center my-4 cart-outer">
+                <div class="col-md-8">
+                    <div class="card mb-4">
+                        <div class="card-header py-3">
+                            <h5 class="mb-0">Cart - 2 items</h5>
+                        </div>
+                        <div class="card-body">
+
+
+                            <!-- Single item -->
+                            <div class="row item" th:each="item: ${cartList}">
+                                <div class="col-lg-3 col-md-12 mb-4 mb-lg-0">
+                                    <!-- Image -->
+                                    <div class="bg-image hover-overlay hover-zoom ripple rounded" data-mdb-ripple-color="light">
+                                        <img th:src="${item.getProduct().thumbnail}"
+                                             class="w-100" alt="Blue Jeans Jacket" />
+                                        <a th:href="@{'/ShopFP/get/'+${item.getProduct().getId()}}">
+                                            <div class="mask" style="background-color: rgba(251, 251, 251, 0.2)"></div>
+                                        </a>
+                                    </div>
+                                    <!-- Image -->
+                                </div>
+
+                                <div class="col-lg-5 col-md-6 mb-4 mb-lg-0">
+                                    <!-- Data -->
+                                    <p><strong th:text="${item.getProduct().name}"></strong></p>
+                                    <input type="hidden" th:value="${item.getProduct().getId()}" class="productId">
+
+                                    <button type="button" class="btn btn-primary btn-sm me-1 mb-2 btnRemove" data-mdb-toggle="tooltip"
+                                            title="Remove item">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-sm mb-2" data-mdb-toggle="tooltip"
+                                            title="Move to the wish list">
+                                        <i class="fas fa-heart"></i>
+                                    </button>
+                                    <!-- Data -->
+                                </div>
+
+                                <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                                    <!-- Quantity -->
+                                    <div class="d-flex mb-4" style="max-width: 300px">
+                                        <button class="btn btn-primary px-3 me-2"
+                                                onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+
+                                        <div class="form-outline ">
+                                            <input min="0" name="quantity" th:value="${item.getQuantity()}" type="number" class="quantity form-control" />
+
+                                        </div>
+
+                                        <button class="btn btn-primary px-3 ms-2"
+                                                onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                    <!-- Quantity -->
+
+                                    <!-- Price -->
+                                    <p class="text-start text-md-center">
+                                        <strong th:text="${item.getProduct().getPriceString()+' VNĐ'}"></strong>
+                                        <input type="hidden" th:value="${item.getProduct().getPrice()}" class="price">
+                                    </p>
+                                    <!-- Price -->
+                                </div>
+                                <hr class="my-4" />
+                            </div>
+                            <!-- Single item -->
+
+
+                        </div>
+                    </div>
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <p><strong>Expected shipping delivery</strong></p>
+
+                        </div>
+                    </div>
+                    <div class="card mb-4 mb-lg-0">
+                        <div class="card-body">
+                            <p><strong>We accept</strong></p>
+                            <img class="me-2" width="45px"
+                                 src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/visa.svg"
+                                 alt="Visa" />
+                            <img class="me-2" width="45px"
+                                 src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/amex.svg"
+                                 alt="American Express" />
+                            <img class="me-2" width="45px"
+                                 src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/mastercard.svg"
+                                 alt="Mastercard" />
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-header py-3">
+                            <h5 class="mb-0">Confirm</h5>
+                        </div>
+                        <div class="card-body">
+
+
+                            <button type="button" id="btnSum" class="btn btn-primary btn-lg btn-block">
+                                    Xác nhận
+                            </button>
+
+                            <button type="button" id="btnClear" class="btn btn-primary btn-lg btn-block">Làm trống giỏ hàng</button>
+<!--                            <form th:method="post">-->
+<!--                            <textarea class="form-control" name="note"></textarea>-->
+<!--                            <input type="hidden" name="totalPrice" th:value="${Summary}">-->
+<!--                            <button type="submit" id="btnConfirm" class="btn btn-primary btn-lg btn-block">-->
+<!--                                Xác nhận thanh toán-->
+<!--                            </button>-->
+<!--                            </form>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        $(document).ready(function () {
+
+            SumMoney();
+            ClearCart();
+            // setInterval('refreshPage()', 5000);
+            getTotalSp();
+
+            Remove();
+        })
+
+
+        function SumMoney() {
+            $('#btnSum').click(function () {
+
+                //
+
+                let item = $(this).parents('.cart-outer').find('.item');
+
+                let lstPrd = [];
+                item.each((index,elem) => {
+
+                   let prd_Id = $(elem).find('.productId').val();
+                   lstPrd.push(prd_Id);
+                });
+
+                let lstQTT = [];
+                item.each((index,elem) => {
+
+                    let prd_Id = $(elem).find('.quantity').val();
+                    lstQTT.push(prd_Id);
+                });
+
+
+                $.ajax({
+                    url: "/api/cart/update",
+                    type: "get",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data:{
+                        productId : lstPrd.join(","),
+                        Quantity : lstQTT.join(","),
+                    },
+
+
+                    success: function (data) {
+
+                        if (data.status == "update") {
+
+
+                           // window.location.href="/ShopFP/home";
+
+                            // refreshPage();
+
+                            window.open("/ShopFP/cart/confirm","_blank")
+
+                        }
+                    }
+
+                })
+
+
+
+            })
+        }
+
+        function ClearCart(){
+            $('#btnClear').click(function () {
+                $.ajax({
+                    url: "/api/cart/clear/",
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json",
+
+
+                    success: function (data) {
+
+                        if (data.status == "clear") {
+
+
+                            refreshPage();
+
+                        }
+                    }
+
+                })
+            })
+        }
+
+        function refreshPage() {
+            location.reload();
+        }
+
+        function Remove() {
+            $('.btnRemove').click(function () {
+                if(confirm("Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng")==true){
+
+                    let item = $(this).closest('.item');
+
+                    let productId = item.find('.productId').val();
+
+                        $.ajax({
+                            url: "/api/cart/delete/"+productId,
+                            type: "GET",
+                            dataType: "json",
+                            contentType: "application/json",
+
+
+                            success: function (data) {
+
+                                if (data.status == "delete") {
+
+                                    alert("Xóa thành công");
+
+                                    refreshPage();
+
+                                }
+                            }
+
+                        })
+
+                }else{
+                    alert("Xóa thất bại");
+                }
+            })
+        }
+
+        function getTotalSp() {
+            $.ajax({
+                url: '/api/cart/TotalSp',
+                type: 'get',
+
+                success: function(response) {
+
+                    // Handle the success response
+                    $('#CartCount').text(response.result);
+                    console.log('Item added to cart:', response);
+                },
+                error: function(xhr, status, error) {
+                    // Handle the error response
+                    console.error('Error adding item to cart:', error);
+                }
+            });
+        }
+
+
+
+        
+    </script>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<header>
+    <!-- Jumbotron -->
+    <div class="p-3 text-center bg-white border-bottom" th:fragment="header">
+        <div class="container">
+            <div class="row gy-3">
+                <!-- Left elements -->
+                <div class="col-lg-2 col-sm-4 col-4">
+                    <a th:href="@{'/ShopFP/home'}" target="_blank" class="float-start">
+                        <img src="https://mdbootstrap.com/img/logo/mdb-transaprent-noshadows.png" height="35">
+                    </a>
+                </div>
+                <!-- Left elements -->
+
+                <!-- Center elements -->
+                <div class="order-lg-last col-lg-5 col-sm-8 col-8">
+                    <div class="d-flex float-end" th:if="${#httpSession.getAttribute('CustomerLogin')==null}">
+                        <a th:href="@{'/ShopFP/login'}" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center"  target="_blank"> <i class="fas fa-user-alt m-1 me-md-2"></i><p class="d-none d-md-block mb-0">Sign in</p> </a>
+                        <a th:href="@{'/ShopFP/register'}" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center" target="_blank"> <i class="fa fa-address-book m-1 me-md-2"></i><p class="d-none d-md-block mb-0">Register</p> </a>
+                        <a th:href="@{'/ShopFP/cart'}" class="border rounded py-1 px-3 nav-link d-flex align-items-center" target="_blank"> <i class="fas fa-shopping-cart m-1 me-md-2"></i> <p class="d-none d-md-block mb-0">My cart </p><p style="margin-left: 10px" class="d-none d-md-block mb-0"></p> </a>
+                    </div>
+                    <div class="d-flex float-end" th:if="${#httpSession.getAttribute('CustomerLogin')!=null}">
+                        <a th:href="@{'/ShopFP/customer/detail/'+${#httpSession.getAttribute('CustomerId')} }" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center"  target="_blank"> <i class="fas fa-user-alt m-1 me-md-2"></i><p class="d-none d-md-block mb-0" th:text="${customerLog}"></p> </a>
+                        <a th:href="@{'/ShopFP/logout'}" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center"  target="_blank"> <i class="fas fa-user-alt m-1 me-md-2"></i><p class="d-none d-md-block mb-0">Logout</p> </a>
+                        <a th:href="@{'/ShopFP/cart'}" class="border rounded py-1 px-3 nav-link d-flex align-items-center" target="_blank"> <i class="fas fa-shopping-cart m-1 me-md-2"></i><p class="d-none d-md-block mb-0">My cart</p><p style="margin-left: 10px" class="d-none d-md-block mb-0" id="CartCount"></p> </a>
+                    </div>
+                </div>
+                <!-- Center elements -->
+
+                <!-- Right elements -->
+                <div class="col-lg-5 col-md-12 col-12">
+                    <form th:method="get" th:action="@{'/ShopFP/search'}">
+                    <div class="input-group float-center">
+
+                        <div class="form-outline">
+                            <input type="text" name="search" id="form1" class="form-control">
+                            <label class="form-label" for="form1" style="margin-left: 0px;">Search</label>
+                                <div class="form-notch"><div class="form-notch-leading" style="width: 9px;"></div>
+                                    <div class="form-notch-middle" style="width: 48.8px;"></div>
+                                    <div class="form-notch-trailing"></div>
+                            </div>
+
+                        </div>
+                            <button type="submit" class="btn btn-primary shadow-0">
+                                <i class="fas fa-search"></i>
+                            </button>
+
+                    </div>
+                    </form>
+                </div>
+                <!-- Right elements -->
+            </div>
+        </div>
+    </div>
+    <!-- Jumbotron -->
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+        <!-- Container wrapper -->
+        <div class="container justify-content-center justify-content-md-between">
+            <!-- Toggle button -->
+            <button class="navbar-toggler border py-2 text-dark collapsed" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarLeftAlignExample" aria-controls="navbarLeftAlignExample" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- Collapsible wrapper -->
+            <div class="navbar-collapse collapse" id="navbarLeftAlignExample" style="">
+                <!-- Left links -->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" aria-current="page" th:href="@{'/ShopFP/home'}">Home</a>
+                    </li>
+<!--                    <li class="nav-item" th:each="item: ${cateListParent0}">-->
+<!--                        <a class="nav-link text-dark" href="#"  th:text="${item.name}"></a>-->
+<!--                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">-->
+<!--                            <li th:each="itemExcept0: ${cateListParentExcept0}" th:if="${itemExcept0.parent_id == item.id}" th:text="${itemExcept0.name}">-->
+<!--                                <a class="dropdown-item" href="#">Action</a>-->
+<!--                            </li>-->
+
+<!--                        </ul>-->
+<!--                    </li>-->
+
+                    <li class="nav-item dropdown " th:each="item: ${cateListParent0}">
+                        <a  class=" nav-link dropdown-toggle text-dark" th:href="@{'/ShopFP/category/get/'+${item.id}}" id="navbarDropdown" role="button" data-mdb-toggle="dropdown" aria-expanded="false" target="_blank" th:text="${item.name}">
+
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li th:each="itemExcept0: ${cateListParentExcept0}" th:if="${itemExcept0.parent_id == item.id}" >
+                                <a class="dropdown-item" th:href="@{'/ShopFP/category/get/'+${itemExcept0.id}}" th:text="${itemExcept0.name}">Action</a>
+                            </li>
+                        </ul>
+                        <!-- Dropdown menu -->
+
+                    </li>
+
+                    <!-- Navbar dropdown -->
+<!--                    <li class="nav-item dropdown">-->
+<!--                        <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-mdb-toggle="dropdown" aria-expanded="false">-->
+<!--                            Others-->
+<!--                        </a>-->
+<!--                        &lt;!&ndash; Dropdown menu &ndash;&gt;-->
+<!--                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">-->
+<!--                            <li>-->
+<!--                                <a class="dropdown-item" href="#">Action</a>-->
+<!--                            </li>-->
+<!--                            <li>-->
+<!--                                <a class="dropdown-item" href="#">Another action</a>-->
+<!--                            </li>-->
+<!--                            <li><hr class="dropdown-divider"></li>-->
+<!--                            <li>-->
+<!--                                <a class="dropdown-item" href="#">Something else here</a>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </li>-->
+                </ul>
+                <!-- Left links -->
+            </div>
+        </div>
+        <!-- Container wrapper -->
+    </nav>
+    <!-- Navbar -->
+    <!-- Jumbotron -->
+    <div class="bg-primary text-white py-5">
+        <div class="container py-5">
+            <h1>
+                Best products &amp; <br>
+                brands in our store Air Conditioner
+            </h1>
+            <p>
+                Trendy Products, Factory Prices, Excellent Service
+            </p>
+
+        </div>
+    </div>
+    <!-- Jumbotron -->
+</header>
+
+<script>
+    $(document).ready(function () {
+
+    })
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get all the dropdown-toggle elements
+        var dropdownToggleElements = document.querySelectorAll('.dropdown-toggle');
+
+        // Attach the event listener to each dropdown-toggle element
+        dropdownToggleElements.forEach(function(element) {
+            element.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent the default behavior of the link
+
+                var categoryId = element.getAttribute('th:text'); // Get the category ID from the text attribute
+                var url = '/ShopFP/category/get/' + categoryId;
+                window.location.href = url;
+            });
+        });
+    });
+
+</script>
+</body>
+</html>

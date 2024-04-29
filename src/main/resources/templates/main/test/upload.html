@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .image-preview {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .image-preview img {
+            width: 200px;
+            height: 200px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Multiple File Upload</h1>
+  <form th:action="@{'/upload'}" method="post" enctype="multipart/form-data">
+    <input type="file" name="files" id="image-input" multiple>
+    <br><br>
+<!--    <input type="submit" value="Upload">-->
+<!--  </form>-->
+
+    <div class="image-preview" id="preview-container"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
+
+    <script>
+
+        $(document).ready(function() {
+            $('#image-input').on('change', function(e) {
+                var files = e.target.files;
+                var previewContainer = $('#preview-container');
+                previewContainer.empty(); // Clear previous previews
+
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    var reader = new FileReader();
+
+                    reader.onload = function(event) {
+                        var image = $('<img>').attr('src', event.target.result);
+                        previewContainer.append(image);
+                    };
+
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+
+    </script>
+
+<div th:each=" item: ${categoryList}" style="margin-left: 20px">
+    <label th:text="${item.getName()}"></label>
+    <input type="checkbox" class="choose" name="options" th:value="${item.getId()}" th:checked="${checkboxData.isOptionSelected(item.getId())}" />
+</div>
+<!--        -->
+<button type="submit">Test all</button>
+
+  </form>
+
+</br>
+</br>
+<div class="form-check d-flex justify-content-center mb-4">
+    <form th:action="@{'/testCate'}" th:method="post" th:object="${checkboxData}">
+
+
+<!--    <div th:each=" item: ${categoryList}" style="margin-left: 20px">-->
+<!--        <label th:text="${item.getName()}"></label>-->
+<!--        <input type="checkbox" class="choose" name="options" th:value="${item.getId()}" th:checked="${checkboxData.isOptionSelected(item.getId())}" />-->
+<!--    </div>-->
+<!--&lt;!&ndash;        &ndash;&gt;-->
+<!--        <button type="submit">Test Cate</button>-->
+    </form>
+
+</div>
+
+<div th:each="item:${Order}">
+    <div th:text="${item.getOrder().getId()}"></div>
+    <div th:text="${item.order.customer.email}"></div>
+    <div th:text="${item.order.customer.phone}"></div>
+    <div th:text="${item.getProduct().name}"></div>
+    <div th:text="${item.getOrder().getNote()}"></div>
+    <div th:text="${item.order.getNote()}"></div>
+
+</div>
+
+
+</body>
+
+</html>

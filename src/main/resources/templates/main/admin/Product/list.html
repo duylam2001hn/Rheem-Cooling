@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{decorators/adminLayout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách sản phẩm</title>
+</head>
+<body>
+<div class="container-fluid" layout:fragment="content">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Sản phẩm</h1>
+
+    </div>
+
+    <div class="row" style="margin-bottom: 1%">
+
+            <a flag="info"
+               class="dt-button buttons-colvis btn btn-primary btn-bold" data-toggle="tooltip"
+               title='Thêm mới' th:href="@{'/admin/product/add'}">
+															<span>
+																<i class="fa fa-plus-circle" style="color: white;font-size: 20px"></i>
+															</span>
+            </a>
+
+        <button flag="info"
+                class="dt-button buttons-colvis btn btn-primary btn-bold deleteObject" data-toggle="tooltip"
+                title='Xóa'>
+                                                                <span>
+                                                                    <i class="fa fa-lock"></i>
+                                                                </span>
+        </button>
+
+
+
+    </div>
+    <div style="margin-left: 50%;">
+
+        <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+            <div class="input-group">
+                <input type="text" id="search" class="form-control bg-light border-2 small" placeholder="Search for..."
+                       aria-label="Search" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="button" id="btnSearch">
+                        <i class="fas fa-search fa-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+
+
+
+    <!-- Content Row -->
+    <div class="row">
+
+        <section class="intro">
+            <div class="bg-image h-100" style="background-color: #f5f7fa;">
+                <div class="mask d-flex align-items-center h-100">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive table-scroll" data-mdb-perfect-scrollbar="true" style="position: relative; height: auto">
+                                            <table class="table table-striped mb-0">
+                                                <thead style="background-color: #002d72;">
+                                                <tr>
+                                                    <th scope="col">ID</th>
+                                                    <th scope="col">Name</th>
+                                                    <th scope="col">Thumbnail</th>
+                                                    <th scope="col">Price</th>
+                                                    <th scope="col">Description</th>
+
+
+                                                    <th colspan="2"></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody id="list_table">
+                                                <tr th:each="item,itemStat:${productList}">
+                                                    <td th:text="${itemStat.index+1}"></td>
+                                                    <td th:text="${item.name}"></td>
+                                                    <td><img th:src="${item.thumbnail}" style="width: 100px;height: 110px"></td>
+                                                    <td th:text="${item.getPriceString()}"></td>
+                                                    <td th:text="${item.description}"></td>
+
+
+
+                                                    <td><a class="btn btn-sm btn-primary btn-edit" data-toggle="tooltip"
+                                                           title="Cập nhật" th:href="@{'/admin/product/get/'+${item.getId()}}"><span class="far fa-edit"></span>
+                                                    </a></td>
+                                                    <td><input type="checkbox" class="choose" name="choose" th:value="${item.getId()}"></td>
+
+                                                </tr>
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+    </div>
+
+    <!-- Content Row -->
+
+    <div class="row">
+
+
+
+    </div>
+
+    <!-- Content Row -->
+    <div>
+        <span id="totalItem" th:text="'Tổng sản phẩm: '+${totalItem}"></span>
+        <span id="totalPage" th:text="'Trang hiện tại-'+${currentPage}+' trong-'+${totalPage}"></span>
+        <!--                                        ${#numbers.sequence(1,totalPage)}-->
+        <span id="page">
+                                                <span th:each="item:${#numbers.sequence(1,totalPage)}">
+                                                    <a th:href="@{'/admin/product/page/'+${item}}" th:text="${item}"></a>
+                                                </span>
+                                        </span>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            Delete();
+            Search();
+        })
+
+
+        function Search() {
+            $('#search').change(function () {
+                let input = $(this).val();
+
+                let idCounter = 0; // Initialize the ID counter
+
+                $.ajax({
+                    url: '/api/admin/product/search',
+                    type: 'Get',
+                    dataType: 'json',
+                    data: {
+                        search:input,
+                    },
+                    contentType: 'application/json',
+
+                    beforeSend:function(){
+                        $("#list_table").html("<img width='100px' "+"src='https://acegif.com/wp-content/uploads/loading-23.gif' />")
+                    },
+                    success: function (data) {
+
+                        setTimeout(function () {
+                            $('#list_table').html(data.result.map(function(DataTable) {
+
+                                idCounter++;
+
+
+                                return `<tr>`+
+                                    `<td>`+
+                                    `${idCounter}`+
+                                    `</td>`+
+                                    `<td>`+
+                                    `${DataTable.name}`+
+                                    `</td>`+
+                                    `<td>`+
+                                    `<img src="${DataTable.thumbnail}" style="width: 100px;height:110px" >`+
+                                    `</td>`+
+                                    `<td>`+
+                                    `${DataTable.price}`+
+                                    `</td>`+
+                                    `<td>`+
+                                    `${DataTable.description}`+
+                                    `</td>`+
+
+                                    `<td>`+
+                                    `<a class="btn btn-sm btn-primary btn-edit" data-toggle="tooltip"
+                                                           title="Cập nhật" href="@{'/admin/product/get/'+${DataTable.id}}"><span class="far fa-edit"></span>
+                                                    </a>`+
+                                    `</td>`+
+
+                                    `<td>`+
+                                    `<input type="checkbox" class="choose" name="choose" value="${DataTable.id}">`+
+                                    `</td>`+
+
+                                    `</tr>`
+                            }))
+                        })
+
+                    }
+                })
+
+            })
+        }
+
+        function loadData() {
+
+
+            let idCounter = 0; // Initialize the ID counter
+
+            $.ajax({
+                url: '/api/admin/product/list',
+                type: 'Get',
+                dataType: 'json',
+                contentType: 'application/json',
+
+                beforeSend:function(){
+                    $("#list_table").html("<img width='100px' "+"src='https://acegif.com/wp-content/uploads/loading-23.gif' />")
+                },
+                success: function (data) {
+
+                    setTimeout(function () {
+                        $('#list_table').html(data.result.map(function(DataTable) {
+
+                            idCounter++;
+
+
+                            return `<tr>`+
+                                `<td>`+
+                                `${idCounter}`+
+                                `</td>`+
+                                `<td>`+
+                                `${DataTable.name}`+
+                                `</td>`+
+                                `<td>`+
+                                `<img src="${DataTable.thumbnail}" style="width: 100px;height:110px" >`+
+                                `</td>`+
+                                `<td>`+
+                                `${DataTable.price}`+
+                                `</td>`+
+                                `<td>`+
+                                `${DataTable.description}`+
+                                `</td>`+
+
+                                `<td>`+
+                                `<a class="btn btn-sm btn-primary btn-edit" data-toggle="tooltip"
+                                                           title="Cập nhật" href="@{'/admin/product/get/'+${DataTable.id}}"><span class="far fa-edit"></span>
+                                                    </a>`+
+                                `</td>`+
+
+                                `<td>`+
+                                `<input type="checkbox" class="choose" name="choose" value="${DataTable.id}">`+
+                                `</td>`+
+
+                                `</tr>`
+                        }))
+                    })
+
+                }
+            })
+        }
+
+
+        function Delete() {
+            $(".deleteObject").click(function () {
+                if(confirm("Bạn có chắc muốn xóa những mục này")==true){
+
+                    var ListId = [];
+                    $('input[name="choose"]:checked').each(function () {
+                        ListId.push(this.value);
+
+
+                    })
+
+                    if(ListId.length>0) {
+
+                        $.ajax({
+                            url: "/api/admin/product/delete/",
+                            type: "GET",
+                            dataType: "json",
+                            contentType: "application/json",
+                            data: {
+                                listIdCheck: ListId.join(","),
+                            }
+
+                            ,
+
+                            success: function (data) {
+
+                                if (data.status == "delete") {
+
+                                    alert("Xóa thành công");
+                                    loadData();
+                                }
+                            }
+
+                        })
+                    }else {
+                        alert("Vui lòng chọn ít nhất 1 mục");
+                    }
+
+
+                }else{
+                    alert("Xóa thất bại");
+                }
+
+            })
+
+
+        }
+
+    </script>
+
+</div>
+</body>
+</html>

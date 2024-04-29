@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <!--    <link href="<c:url value='/template/web/css/styles.css' />" rel="stylesheet" type="text/css" />-->
+    <!--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">-->
+    <script type="text/javascript" src="https://mdbootstrap.com/api/snippets/static/download/MDB5-Free_6.4.1/js/mdb.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;display=swap">
+    <link rel="stylesheet" href="https://mdbootstrap.com/api/snippets/static/download/MDB5-Free_6.4.1/css/mdb.min.css">
+
+    <link th:href="@{'/template/web/css/styles.css'}" rel="stylesheet" type="text/css"/>
+
+
+
+    <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.js" integrity="sha512-HGOnQO9+SP1V92SrtZfjqxxtLmVzqZpjFFekvzZVWoiASSQgSr4cw9Kqd2+l8Llp4Gm0G8GIFJ4ddwZilcdb8A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+</head>
+<body>
+
+<!-- Responsive navbar-->
+
+<!-- header -->
+<nav th:replace="/common/web/header :: header">
+
+    <!-- header -->
+</nav>
+
+
+<!-- Page Content-->
+
+<div layout:fragment="content">
+
+</div>
+
+<!-- Footer-->
+
+<footer th:replace="/common/web/footer :: footer">
+
+</footer>
+<!-- Footer -->
+
+<!-- Bootstrap core JS-->
+
+<!-- Core theme JS-->
+
+<!--<script src="<c:url value='template/web/js/scripts.js'/>"></script>-->
+
+<script th:src="@{'/template/web/js/scripts.js'}"></script>
+
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{decorators/webLayout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content">
+  <section class="vh-200">
+    <div class="container-fluid h-custom">
+      <div class="row d-flex justify-content-center h-100">
+        <div class="col-xl-2">
+          <div class="list-group">
+
+            <a th:href="@{'/ShopFP/customer/detail/'+${customer.getId()}}" class="list-group-item list-group-item-action">Thông tin tài khoản</a>
+            <a th:href="@{'/ShopFP/customer/OrderDetail/'+${customer.getId()}}" class="list-group-item list-group-item-action">Quản lí đơn hàng</a>
+
+          </div>
+
+        </div>
+        <div class="col-xl-8">
+          <h3 style="margin-top: 20px">Thông tin tài khoản</h3>
+
+          <form  th:action="@{'/ShopFP/customer/detail/'}" th:method="post" th:object="${customer}">
+            <input type="hidden" th:field="${customer.id}">
+
+            <label>Tên</label>
+            <input type="text" class="form-control" th:field="${customer.name}" style="margin-bottom: 20px">
+            <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="background-color: #F9E1E5;color: #AF2387"></p>
+
+            <label>Email</label>
+            <input type="text" class="form-control" th:field="${customer.email}" style="margin-bottom: 20px">
+            <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}"  style="background-color: #F9E1E5;color: #AF2387"></p>
+
+            <label>Điện thoại</label>
+            <input type="text" class="form-control" th:field="${customer.phone}" style="margin-bottom: 20px">
+            <p th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"  style="background-color: #F9E1E5;color: #AF2387"></p>
+
+            <label>Địa chỉ</label>
+            <input type="text" class="form-control" th:field="${customer.address}" style="margin-bottom: 20px">
+            <p th:if="${#fields.hasErrors('address')}" th:errors="*{address}"  style="background-color: #F9E1E5;color: #AF2387"></p>
+
+            <label>Nhập password cũ</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="nhập password cũ" style="margin-bottom: 20px">
+            <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}"  style="background-color: #F9E1E5;color: #AF2387"></p>
+
+            <label>Nhập password mới</label>
+            <input type="password" class="form-control" name="passwordNew" placeholder="nhập password mới" style="margin-bottom: 20px" required>
+            <div style="width: 150px">
+            <button type="submit" class="form-control btn btn-primary">Lưu thay đổi</button>
+
+              <p th:if="${EmailExisted != null}" th:text="${EmailExisted}" class="alert alert-danger" ></p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+  <script>
+
+    $(document).ready(function () {
+
+
+      getTotalSp();
+
+    })
+    function getTotalSp() {
+      $.ajax({
+        url: '/api/cart/TotalSp',
+        type: 'get',
+
+        success: function(response) {
+
+          // Handle the success response
+          $('#CartCount').text(response.result);
+          console.log('Item added to cart:', response);
+        },
+        error: function(xhr, status, error) {
+          // Handle the error response
+          console.error('Error adding item to cart:', error);
+        }
+      });
+    }
+  </script>
+</div>
+</body>
+</html>

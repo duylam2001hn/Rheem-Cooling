@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{decorators/adminLayout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách sản phẩm</title>
+</head>
+<body>
+<div class="container-fluid" layout:fragment="content">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Sản phẩm</h1>
+
+    </div>
+
+    <div class="row" style="margin-bottom: 1%">
+
+            <a flag="info"
+               class="dt-button buttons-colvis btn btn-primary btn-bold" data-toggle="tooltip"
+               title='Thêm mới' th:href="@{'/admin/product/add'}" target="_blank">
+															<span>
+																<i class="fa fa-plus-circle" style="color: white;font-size: 20px"></i>
+															</span>
+            </a>
+
+
+
+
+    </div>
+
+    <!-- Content Row -->
+    <div class="row col-lg-8" style="margin-left: 50px" >
+
+        <form th:action="@{'/admin/product/save'}" th:method="post" th:field="${product}" enctype="multipart/form-data">
+
+            <input type="hidden" name="form" value="add">
+            <!-- Name input -->
+            <div class="form-outline mb-8">
+                <label class="form-label" >Name</label>
+                <textarea th:field="${product.name}" class="form-control"  rows="1" cols="50"></textarea>
+            </div>
+            <br>
+
+<!--            Thumbnail input-->
+            <div class="form-outline mb-8">
+                <div class="form-label" >Thumbnail</div>
+                <br>
+                <input type="file" name="fileThumbnail" id="image-thumbnail"  onchange="limitFileSelection(this)">
+                <br>
+                <br>
+                <div class="image-preview" id="preview-thumbnail"></div>
+            </div>
+            <br>
+            <br>
+
+
+            <!-- Price input -->
+            <div class="form-outline mb-8">
+                <label class="form-label" >Price</label>
+                <input type="text" th:field="${product.price}"  class="form-control" />
+
+            </div>
+
+            <br>
+            <!-- Description input -->
+            <div class="form-outline mb-8">
+                <label class="form-label" >Description</label>
+                <textarea th:field="${product.description}" class="form-control"  rows="8"></textarea>
+
+            </div>
+
+            <!-- Checkbox -->
+            <div class="form-check justify-content-center mb-4 " style="margin-top: 20px">
+
+                <h4>Thể loại</h4>
+                <div th:each=" item: ${categoryList}" style="margin-left: 20px">
+                    <label th:text="${item.getName()}"></label>
+                    <input type="checkbox" class="choose" name="options" th:value="${item.getId()}" th:checked="${checkboxData.isOptionSelected(item.getId())}">
+                </div>
+
+
+
+            </div>
+            <div>
+                <p>
+
+                    <label>Thêm ảnh sản phẩm</label>
+                </p>
+                <input type="file" name="files" id="image-input" multiple onchange="limitFileSelectionImg(this)" >
+                <br><br>
+                <!--    <input type="submit" value="Upload">-->
+                <!--  </form>-->
+
+                <div class="image-preview" id="preview-container"></div>
+                <script>
+
+                    function limitFileSelection(input) {
+                        if (input.files.length > 1) {
+                            input.value = input.files[0].name;
+                            input.files = [input.files[0]];
+                        }
+                    }
+
+                    function limitFileSelectionImg(input) {
+                        if (input.files.length > 4) {
+                            alert("Vui lòng chỉ up lên tối đa 4 ảnh");
+                            input.value = '';
+                        }
+                    }
+
+                    $(document).ready(function() {
+
+                        previewImagesFile();
+                        previewThumbnail();
+                    });
+                    
+                    function previewImagesFile() {
+                        $('#image-input').on('change', function(e) {
+                            var files = e.target.files;
+                            var previewContainer = $('#preview-container');
+                            previewContainer.empty(); // Clear previous previews
+
+                            for (var i = 0; i < files.length; i++) {
+                                var file = files[i];
+                                var reader = new FileReader();
+
+                                reader.onload = function(event) {
+                                    var image = $('<img style="width: 100px;height: 110px">').attr('src', event.target.result);
+                                    previewContainer.append(image);
+                                };
+
+                                reader.readAsDataURL(file);
+                            }
+                        });
+                    }
+                    
+                    function previewThumbnail() {
+                        $('#image-thumbnail').on('change', function(e) {
+                            var files = e.target.files;
+                            var previewContainer = $('#preview-thumbnail');
+                            previewContainer.empty(); // Clear previous previews
+
+                            for (var i = 0; i < files.length; i++) {
+                                var file = files[i];
+                                var reader = new FileReader();
+
+                                reader.onload = function(event) {
+                                    var image = $('<img style="width: 100px;height: 110px">').attr('src', event.target.result);
+                                    previewContainer.append(image);
+                                };
+
+                                reader.readAsDataURL(file);
+                            }
+                        });
+                    }
+
+                </script>
+
+
+            </div>
+            </br>
+            </br>
+
+            <!-- Submit button -->
+            <button type="submit" class="btn btn-primary btn-block mb-4">Submit</button>
+        </form>
+
+
+
+
+    </div>
+
+    <!-- Content Row -->
+
+
+
+    <!-- Content Row -->
+    <div class="row">
+
+        <!-- Content Column -->
+
+
+
+    </div>
+
+</div>
+</body>
+</html>
